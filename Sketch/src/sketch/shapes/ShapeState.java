@@ -30,7 +30,7 @@ public class ShapeState {
 	
 	@Override
 	public String toString(){
-		return type.toString() + "/" + Vec2fString(location) + Vec2fString(size) + rotation + "/" + colorString(color) + colorString(borderColor) + borderWidth;
+		return type.toString() + "/" + Vec2fString(location) + Vec2fString(size) + rotation + "/" + colorString(color) + colorString(borderColor) + borderWidth + "\n";
 	}
 	
 	private String Vec2fString(Vec2f v){

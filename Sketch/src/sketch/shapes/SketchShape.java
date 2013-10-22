@@ -3,7 +3,6 @@ package sketch.shapes;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
@@ -116,21 +115,21 @@ public abstract class SketchShape{
 		return location.plus(size.sdiv(2));
 	}
 	
-	protected Vec2f transformToShape(Point point){
+	protected Vec2f transformToShape(Vec2f point){
 		Vec2f _center = getCenter();
 		//transform to match shape
-		Vec2f p = new Vec2f(new Vec2i(point)).minus(_center);
+		Vec2f p = point.minus(_center);
 		p = new Vec2f(p.dot((float)Math.cos(rotation), -(float)Math.sin(rotation)), p.dot((float)Math.sin(rotation), (float)Math.cos(rotation)));
 		return p.plus(_center);
 	}
 	
-	public boolean contains(Point point){
+	public boolean contains(Vec2f point){
 		Vec2f p = transformToShape(point);
 		
 		return getShape().contains(p.x, p.y);
 	}
 	
-	public Vec2i clickedToScale(Point point){
+	public Vec2i clickedToScale(Vec2f point){
 		Vec2f p = transformToShape(point);
 		
 		//check all the scaling circle things
@@ -153,7 +152,7 @@ public abstract class SketchShape{
 		return new Vec2i();
 	}
 	
-	public boolean clickedToRotate(Point point){
+	public boolean clickedToRotate(Vec2f point){
 		Vec2f p = transformToShape(point);
 		
 		return withinCircle(p, getCenter().plus(0, -size.y/2 - ROTATE_CIRCLE_DISTANCE));

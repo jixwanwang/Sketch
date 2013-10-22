@@ -2,7 +2,6 @@ package sketch.shapes;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,10 +85,10 @@ public class Compound extends SketchShape {
 		return null;
 	}
 	
-	public boolean contains(Point point){
+	public boolean contains(Vec2f point){
 		Vec2f p = transformToShape(point);
 		for (SketchShape s : shapes){
-			if (s.getShape().contains(p.x, p.y)){
+			if (s.contains(p)){
 				return true;
 			}
 		}
@@ -120,7 +119,7 @@ public class Compound extends SketchShape {
 	public String toString(){
 		StringBuilder string = new StringBuilder();
 		for (SketchShape s : shapes){
-			string.append(s.toString());
+			string.append("  " + s.toString());
 		}
 		return string.toString();
 	}

@@ -45,6 +45,7 @@ import sketch.shapes.Compound;
 import sketch.shapes.ShapeState;
 import sketch.shapes.ShapeType;
 import sketch.shapes.SketchShape;
+import sketch.shapes.Vec2f;
 import sketch.shapes.Vec2i;
 
 /**
@@ -333,7 +334,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 		//iterate from the more front shape down
 		for (int i = shapes.size() - 1; i >= 0; i--){
-			if (shapes.get(i).contains(e.getPoint())){
+			if (shapes.get(i).contains(new Vec2f(new Vec2i(e.getPoint())))){
 				if (!e.isControlDown())
 					clearSelected();
 				
@@ -368,20 +369,20 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			SketchShape s = selected.get(0);
 			
 			//try scaling
-			Vec2i _scaleDir = s.clickedToScale(e.getPoint());
+			Vec2i _scaleDir = s.clickedToScale(new Vec2f(new Vec2i(e.getPoint())));
 			if (_scaleDir.x != 0 || _scaleDir.y != 0){
 				setAction(new ScaleAction(_scaleDir));
 				return;
 			}
 			
 			//try rotation
-			if (s.clickedToRotate(e.getPoint())){
+			if (s.clickedToRotate(new Vec2f(new Vec2i(e.getPoint())))){
 				setAction(new RotateAction());
 				return;
 			}
 		}
 		for (SketchShape s : selected){
-			if (s.contains(e.getPoint())){
+			if (s.contains(new Vec2f(new Vec2i(e.getPoint())))){
 				setAction(new MoveAction());
 				return;
 			}
