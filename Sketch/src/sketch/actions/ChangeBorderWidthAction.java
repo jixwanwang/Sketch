@@ -1,4 +1,4 @@
-package sketch.logic;
+package sketch.actions;
 
 import sketch.panels.DrawPanel;
 import sketch.shapes.SketchShape;

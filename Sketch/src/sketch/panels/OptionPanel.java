@@ -46,6 +46,9 @@ public class OptionPanel extends JPanel{
 	private JButton sendFullBack;
 	private JButton sendFullFront;
 	
+	private JButton group;
+	private JButton ungroup;
+	
 	private JLabel colorChooser;
 	private JLabel bordercolorChooser;
 	private JLabel borderValue;
@@ -89,7 +92,23 @@ public class OptionPanel extends JPanel{
 			}
 		});
 		
-		//buttons for ordering
+		//buttons for ordering and grouping
+		group = new JButton("Group");
+		group.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				draw.groupSelected();
+			}
+		});
+		
+		ungroup = new JButton("Ungroup");
+		ungroup.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				draw.ungroup();
+			}
+		});
+		
 		sendFront = new JButton("Move forward");
 		sendFront.addActionListener(new ActionListener(){
 			@Override
@@ -262,6 +281,8 @@ public class OptionPanel extends JPanel{
 		JPanel _orderPanel = new JPanel();
 		_orderPanel.setBackground(_bg);
 		_orderPanel.setLayout(new GridLayout(0, 2, 10, 10));
+		_orderPanel.add(group);
+		_orderPanel.add(ungroup);
 		_orderPanel.add(sendFront);
 		_orderPanel.add(sendBack);
 		_orderPanel.add(sendFullFront);
@@ -269,6 +290,24 @@ public class OptionPanel extends JPanel{
 		this.add(_orderPanel);
 		
 		disableOrdering();
+		disableGrouping();
+		disableUngroup();
+	}
+	
+	public void enableGrouping(){
+		group.setEnabled(true);
+	}
+	
+	public void disableGrouping(){
+		group.setEnabled(false);
+	}
+	
+	public void enableUngroup(){
+		ungroup.setEnabled(true);
+	}
+	
+	public void disableUngroup(){
+		ungroup.setEnabled(false);
 	}
 	
 	public void disableOrdering(){

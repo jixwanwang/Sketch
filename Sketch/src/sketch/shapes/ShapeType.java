@@ -1,5 +1,11 @@
 package sketch.shapes;
 
+/**
+ * Basic shape types. These are the building block shapes that can be added directly into the drawing panel.
+ * 
+ * @author Jixuan Wang
+ */
+
 public enum ShapeType {
 	RECTANGLE {
 		@Override

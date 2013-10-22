@@ -1,4 +1,4 @@
-package sketch.logic;
+package sketch.actions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,11 +6,12 @@ import java.util.List;
 import sketch.panels.DrawPanel;
 import sketch.shapes.ShapeState;
 import sketch.shapes.SketchShape;
+import sketch.shapes.Vec2f;
 import sketch.shapes.Vec2i;
 
 public class DuplicateAction extends DPModifyingAction {
-	private final Vec2i OFFSET = new Vec2i(15,15);
-	List<SketchShape> duplicates;
+	private final Vec2f OFFSET = new Vec2f(15,15);
+	private List<SketchShape> duplicates;
 	
 	public DuplicateAction(DrawPanel p) {
 		super(p);
@@ -36,5 +37,4 @@ public class DuplicateAction extends DPModifyingAction {
 	public void undo() {
 		dp.removeShapes(duplicates);
 	}
-
 }

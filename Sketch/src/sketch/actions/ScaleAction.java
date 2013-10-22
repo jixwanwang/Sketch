@@ -1,5 +1,6 @@
-package sketch.logic;
+package sketch.actions;
 
+import sketch.shapes.Vec2f;
 import sketch.shapes.Vec2i;
 
 public class ScaleAction extends SketchAction {
@@ -7,17 +8,18 @@ public class ScaleAction extends SketchAction {
 	 * Whether to scale up or down when moving in the x and y directions
 	 */
 	private Vec2i scaling;
-	private Vec2i diff;
+	private Vec2f diff;
 	
 	public ScaleAction(Vec2i scaling) {
 		super();
 		this.scaling = scaling;
+		this.diff = new Vec2f();
 	}
-
+	
 	@Override
 	public void update(Vec2i mousePos) {
 		//TODO: make this work with rotation properly?
-		diff = mousePos.minus(start).pmult(scaling);
+		diff = new Vec2f(mousePos.minus(start).pmult(scaling));
 		apply();
 	}
 

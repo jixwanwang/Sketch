@@ -1,4 +1,4 @@
-package sketch.logic;
+package sketch.actions;
 
 import java.awt.Color;
 

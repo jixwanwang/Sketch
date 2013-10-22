@@ -1,4 +1,4 @@
-package sketch.logic;
+package sketch.actions;
 
 import sketch.shapes.ShapeState;
 import sketch.shapes.SketchShape;
@@ -12,8 +12,8 @@ public class RotateAction extends SketchAction {
 	public void update(Vec2i mousePos) {
 		//can only be rotating one shape
 		SketchShape s = shapesAffected.get(0);
-		Vec2f _start = new Vec2f(start.minus(s.getCenter()));
-		Vec2f _end = new Vec2f(mousePos.minus(s.getCenter()));
+		Vec2f _start = new Vec2f(start).minus(s.getCenter());
+		Vec2f _end = new Vec2f(mousePos).minus(s.getCenter());
 		rotation = - Math.acos(_start.dot(_end)/_start.mag()/_end.mag())*Math.signum(_start.cross(_end));
 		apply();
 	}

@@ -1,7 +1,8 @@
-package sketch.logic;
+package sketch.actions;
 
 import sketch.panels.DrawPanel;
 import sketch.shapes.SketchShape;
+import sketch.shapes.Vec2f;
 import sketch.shapes.Vec2i;
 
 /**
@@ -19,13 +20,13 @@ public class AddShapeAction extends DPModifyingAction{
 	@Override
 	public void start(Vec2i mousePos){
 		super.start(mousePos);
-		shapesAffected.get(0).setLocation(mousePos);
+		shapesAffected.get(0).setLocation(new Vec2f(mousePos));
 	}
 	
 	@Override
 	public void update(Vec2i mousePos){
 		diff = mousePos.minus(start);
-		shapesAffected.get(0).setSize(diff);
+		shapesAffected.get(0).setSize(new Vec2f(diff));
 	}
 	
 	@Override

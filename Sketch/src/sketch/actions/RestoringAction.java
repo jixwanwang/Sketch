@@ -1,4 +1,4 @@
-package sketch.logic;
+package sketch.actions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,12 +6,18 @@ import java.util.List;
 import sketch.panels.DrawPanel;
 import sketch.shapes.SketchShape;
 
-public class RemoveAction extends DPModifyingAction {
+/**
+ * SketchAction whose redo is simply to restore the old state of the drawing panel's shape list.
+ * 
+ * @author Jixuan Wang
+ */
+public abstract class RestoringAction extends DPModifyingAction {
 	private List<SketchShape> oldList;
 	
-	public RemoveAction(DrawPanel dp, List<SketchShape> oldList) {
+	public RestoringAction(DrawPanel dp, List<SketchShape> oldList) {
 		super(dp);
 		this.oldList = new ArrayList<SketchShape>();
+		//copy the old list
 		for (SketchShape s : oldList){
 			this.oldList.add(s);
 		}
@@ -19,14 +25,11 @@ public class RemoveAction extends DPModifyingAction {
 
 	@Override
 	public void apply() {
-		for (SketchShape s : shapesAffected){
-			dp.removeShape(s);
-		}
+
 	}
 
 	@Override
 	public void undo() {
 		dp.setShapes(oldList);
 	}
-
 }

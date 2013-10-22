@@ -28,17 +28,20 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import sketch.logic.AddShapeAction;
-import sketch.logic.ChangeBorderColorAction;
-import sketch.logic.ChangeBorderWidthAction;
-import sketch.logic.ChangeColorAction;
-import sketch.logic.DuplicateAction;
-import sketch.logic.MoveAction;
-import sketch.logic.OrderChangeAction;
-import sketch.logic.RemoveAction;
-import sketch.logic.RotateAction;
-import sketch.logic.ScaleAction;
-import sketch.logic.SketchAction;
+import sketch.actions.AddShapeAction;
+import sketch.actions.ChangeBorderColorAction;
+import sketch.actions.ChangeBorderWidthAction;
+import sketch.actions.ChangeColorAction;
+import sketch.actions.DuplicateAction;
+import sketch.actions.GroupAction;
+import sketch.actions.MoveAction;
+import sketch.actions.OrderChangeAction;
+import sketch.actions.RemoveAction;
+import sketch.actions.RotateAction;
+import sketch.actions.ScaleAction;
+import sketch.actions.SketchAction;
+import sketch.actions.UngroupAction;
+import sketch.shapes.Compound;
 import sketch.shapes.ShapeState;
 import sketch.shapes.ShapeType;
 import sketch.shapes.SketchShape;
@@ -196,6 +199,14 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		repaint();
 	}
 	
+	public void addShapeAndSelect(SketchShape s, int index){
+		clearSelected();
+		this.shapes.add(index, s);
+		selected.add(s);
+		s.select();
+		repaint();
+	}
+	
 	public void addShapesAndSelect(List<SketchShape> shapes){
 		clearSelected();
 		for (SketchShape s : shapes){
@@ -207,7 +218,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	public void setShapes(List<SketchShape> newlist) {
-		this.shapes = newlist;
+		this.shapes.clear();
+		for (SketchShape s : newlist){
+			this.shapes.add(s);
+		}
 		repaint();
 	}
 	
@@ -230,9 +244,36 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		repaint();
 	}
 	
+	public void setSelected(List<SketchShape> s){
+		clearSelected();
+		for (SketchShape s2 : s){
+			s2.select();
+			this.selected.add(s2);
+		}
+		updateOptions();
+	}
+	
 	public void duplicateSelected(){
 		setAction(new DuplicateAction(this));
 		doAction();
+	}
+	
+	private void updateOptions(){
+		options.disableOrdering();
+		options.disableGrouping();
+		options.disableUngroup();
+		
+		if (selected.size() == 1){
+			options.enableOrdering();
+			if (selected.get(0) instanceof Compound)
+				options.enableUngroup();
+		}
+		else if (selected.size() > 1){
+			options.enableGrouping();
+			options.disableUngroup();
+			options.disableOrdering();
+			options.enablePartialOrdering();
+		}
 	}
 	
 	private void doAction(){
@@ -243,13 +284,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			//can't redo after doing a new action
 			undoneActions.clear();
 		}
-		options.disableOrdering();
-		if (selected.size() > 0){
-			if (selected.size() == 1)
-				options.enableOrdering();
-			else
-				options.enablePartialOrdering();
-		}
+		updateOptions();
 		repaint();
 	}
 	
@@ -283,6 +318,8 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 		selected.clear();
 		options.disableOrdering();
+		options.disableGrouping();
+		options.disableUngroup();
 	}
 	
 	/**
@@ -297,9 +334,9 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		//iterate from the more front shape down
 		for (int i = shapes.size() - 1; i >= 0; i--){
 			if (shapes.get(i).contains(e.getPoint())){
-				if (!e.isControlDown()){
+				if (!e.isControlDown())
 					clearSelected();
-				}
+				
 				if (shapes.get(i).isSelected()){
 					shapes.get(i).unselect();
 					selected.remove(shapes.get(i));
@@ -308,17 +345,11 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 					shapes.get(i).select();
 					selected.add(shapes.get(i));
 				}
-				if (selected.size() == 1)
-					options.enableOrdering();
-				else{
-					options.disableOrdering();
-					options.enablePartialOrdering();
-				}
+				updateOptions();
 				repaint();
 				return;
 			}
 		}
-		options.disableOrdering();
 		clearSelected();
 		repaint();
 	}
@@ -460,6 +491,33 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 	}
 
+	public void groupSelected(){
+		//find the index to put the new shape at
+		for (int i = shapes.size() - 1; i >= 0; i--){
+			if (selected.contains(shapes.get(i))){
+				activeAction = new GroupAction(this, shapes, i + 1);
+				//iterate in order to keep the order consistent
+				for (SketchShape s : shapes){
+					if (selected.contains(s)){
+						activeAction.addAffectedShape(s);
+					}
+				}
+				doAction();
+				return;
+			}
+		}
+	}
+	
+	public void ungroup(){
+		for (int i = shapes.size() - 1; i >= 0; i--){
+			if (selected.contains(shapes.get(i))){
+				setAction(new UngroupAction(this, shapes, i));
+				doAction();
+				return;
+			}
+		}
+	}
+	
 	public void setSelectedColor(Color c) {
 		setAction(new ChangeColorAction(this, c, defaultColor));
 		doAction();
@@ -495,13 +553,12 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		defaultBorderWidth = width;
 		options.setBorderWidth(width);
 	}
-	
 
 	public void writeTo(File file) {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 			for (SketchShape s : shapes){
-				bw.write(s.getState().toString());
+				bw.write(s.toString());
 				bw.newLine();
 			}
 			
@@ -533,16 +590,36 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		int id = 0;
 		
 		for (SketchShape s : shapes){
-			id++;
-			ShapeState ss = s.getState();
-			String ntext = text;
-			ntext = ntext.replaceAll("\\{locx\\}", ss.location.x + "").replaceAll("\\{locy\\}", ss.location.y + "");
-			ntext = ntext.replaceAll("\\{sizex\\}", ss.size.x + "").replaceAll("\\{sizey\\}", ss.size.y + "");
-			ntext = ntext.replaceAll("\\{colorr\\}", ss.color.getRed() + "").replaceAll("\\{colorg\\}", ss.color.getGreen() + "").replaceAll("\\{colorb\\}", ss.color.getBlue() + "");
-			ntext = ntext.replaceAll("\\{bcolorr\\}", ss.borderColor.getRed() + "").replaceAll("\\{bcolorg\\}", ss.borderColor.getGreen() + "").replaceAll("\\{bcolorb\\}", ss.borderColor.getBlue() + "");
-			ntext = ntext.replaceAll("\\{rot\\}", ss.rotation + "").replaceAll("\\{bwidth\\}", ss.borderWidth + "");
-			ntext = ntext.replaceAll("\\{type\\}", ss.type.toString()).replaceAll("\\{#\\}", "shape" + id);
-			System.out.println(ntext);
+			id = output(text, id, s);
+		}
+	}
+	
+	/**
+	 * Outputs formatted text for a shape.
+	 * 
+	 * @param text
+	 * @param id
+	 * @param shape
+	 * @return the next unique id
+	 */
+	private int output(String text, int id, SketchShape shape){
+		if (shape instanceof Compound){
+			for (SketchShape s : ((Compound) shape).getChildren()){
+				id = output(text, id, s);
+			}
+			return id;
+		}
+		else{
+			ShapeState ss = shape.getState();
+			String format = text;
+			format = format.replaceAll("\\{locx\\}", ss.location.x + "").replaceAll("\\{locy\\}", ss.location.y + "");
+			format = format.replaceAll("\\{sizex\\}", ss.size.x + "").replaceAll("\\{sizey\\}", ss.size.y + "");
+			format = format.replaceAll("\\{colorr\\}", ss.color.getRed() + "").replaceAll("\\{colorg\\}", ss.color.getGreen() + "").replaceAll("\\{colorb\\}", ss.color.getBlue() + "");
+			format = format.replaceAll("\\{bcolorr\\}", ss.borderColor.getRed() + "").replaceAll("\\{bcolorg\\}", ss.borderColor.getGreen() + "").replaceAll("\\{bcolorb\\}", ss.borderColor.getBlue() + "");
+			format = format.replaceAll("\\{rot\\}", ss.rotation + "").replaceAll("\\{bwidth\\}", ss.borderWidth + "");
+			format = format.replaceAll("\\{type\\}", ss.type.toString()).replaceAll("\\{#\\}", "shape" + id);
+			System.out.println(format);
+			return id + 1;
 		}
 	}
 }

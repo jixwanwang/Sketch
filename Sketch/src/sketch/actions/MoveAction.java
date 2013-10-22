@@ -1,5 +1,6 @@
-package sketch.logic;
+package sketch.actions;
 
+import sketch.shapes.Vec2f;
 import sketch.shapes.Vec2i;
 
 public class MoveAction extends SketchAction {
@@ -19,7 +20,7 @@ public class MoveAction extends SketchAction {
 	@Override
 	public void apply() {
 		for (int i = 0; i < shapesAffected.size(); i++){
-			shapesAffected.get(i).setLocation(originalStates.get(i).location.plus(moveAmount));
+			shapesAffected.get(i).setLocation(originalStates.get(i).location.plus(new Vec2f(moveAmount)));
 		}
 	}
 

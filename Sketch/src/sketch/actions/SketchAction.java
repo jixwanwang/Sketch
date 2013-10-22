@@ -1,4 +1,4 @@
-package sketch.logic;
+package sketch.actions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,7 @@ import sketch.shapes.Vec2i;
  * This might be too specific, however, perhaps I should 
  * write an "Undoable" interface which only has the 
  * undo and apply methods, since several of the actions
- * only really exist for undo purposes. Maybe.
- * TODO: the above.
+ * only really exist for undo purposes. Maybe. Nah
  * 
  * @author Jixuan Wang
  */
