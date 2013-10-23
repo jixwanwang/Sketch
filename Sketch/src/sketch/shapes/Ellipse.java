@@ -7,6 +7,14 @@ import java.awt.geom.Ellipse2D;
 
 public class Ellipse extends SketchShape{
 	
+	public Ellipse(){
+		super();
+	}
+	
+	public Ellipse(ShapeState s){
+		super(s);
+	}
+	
 	@Override
 	protected Shape getShape(){
 		return new Ellipse2D.Float(location.x,location.y,size.x,size.y);
@@ -24,12 +32,12 @@ public class Ellipse extends SketchShape{
 	}
 	
 	@Override
-	public ShapeState getState(){
-		return new ShapeState(ShapeType.ELLIPSE, location, size, rotation, color, borderColor, borderWidth);
+	public String getName(){
+		return "Ellipse";
 	}
-
+	
 	@Override
-	public String toString() {
-		return getState().toString();
+	public SketchShape copy() {
+		return new Ellipse(getState());
 	}
 }

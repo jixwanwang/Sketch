@@ -67,11 +67,6 @@ public class Compound extends SketchShape {
 		this.size = size;
 		this.setLocation(location.minus(offset));
 	}
-	
-	@Override
-	public ShapeState getState() {
-		return new ShapeState(ShapeType.RECTANGLE, location, size, rotation, Color.black, Color.black, 0);
-	}
 
 	@Override
 	protected void drawSelf(Graphics2D g) {
@@ -119,8 +114,22 @@ public class Compound extends SketchShape {
 	public String toString(){
 		StringBuilder string = new StringBuilder();
 		for (SketchShape s : shapes){
-			string.append("  " + s.toString());
+			string.append(s.toString());
 		}
 		return string.toString();
+	}
+
+	@Override
+	public String getName(){
+		return "Compound";
+	}
+
+	@Override
+	public SketchShape copy() {
+		SketchShape[] _shapes = new SketchShape[shapes.size()];
+		for (int i = 0; i < shapes.size(); i++){
+			_shapes[i] = shapes.get(i).copy();
+		}
+		return new Compound(_shapes);
 	}
 }

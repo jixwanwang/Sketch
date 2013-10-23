@@ -7,6 +7,14 @@ import java.awt.geom.Path2D;
 
 public class Triangle extends SketchShape {
 
+	public Triangle(){
+		super();
+	}
+	
+	public Triangle(ShapeState s){
+		super(s);
+	}
+	
 	@Override
 	protected Shape getShape(){
 		Path2D.Float _path = new Path2D.Float();
@@ -32,12 +40,12 @@ public class Triangle extends SketchShape {
 	}
 	
 	@Override
-	public ShapeState getState() {
-		return new ShapeState(ShapeType.TRIANGLE, location, size, rotation, color, borderColor, borderWidth);
+	public String getName(){
+		return "Triangle";
 	}
-
+	
 	@Override
-	public String toString() {
-		return getState().toString();
+	public SketchShape copy() {
+		return new Triangle(getState());
 	}
 }

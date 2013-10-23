@@ -42,9 +42,12 @@ import sketch.actions.ScaleAction;
 import sketch.actions.SketchAction;
 import sketch.actions.UngroupAction;
 import sketch.shapes.Compound;
+import sketch.shapes.Ellipse;
+import sketch.shapes.Rectangle;
 import sketch.shapes.ShapeState;
 import sketch.shapes.ShapeType;
 import sketch.shapes.SketchShape;
+import sketch.shapes.Triangle;
 import sketch.shapes.Vec2f;
 import sketch.shapes.Vec2i;
 
@@ -560,7 +563,6 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 			for (SketchShape s : shapes){
 				bw.write(s.toString());
-				bw.newLine();
 			}
 			
 			bw.close();
@@ -575,7 +577,14 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			String line;
 			List<SketchShape> _shapes = new ArrayList<SketchShape>();
 			while( (line = br.readLine()) != null){
-				_shapes.add(ShapeState.read(line).generateShape());
+				ShapeState s = ShapeState.read(line);
+				String _name = line.split("/")[0];
+				if (_name.equals("Rectangle"))
+					_shapes.add(new Rectangle(s));
+				else if (_name.equals("Ellipse"))
+					_shapes.add(new Ellipse(s));
+				else if (_name.equals("Triangle"))
+					_shapes.add(new Triangle(s));
 			}
 			shapes = _shapes;
 			repaint();
@@ -618,7 +627,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			format = format.replaceAll("\\{colorr\\}", ss.color.getRed() + "").replaceAll("\\{colorg\\}", ss.color.getGreen() + "").replaceAll("\\{colorb\\}", ss.color.getBlue() + "");
 			format = format.replaceAll("\\{bcolorr\\}", ss.borderColor.getRed() + "").replaceAll("\\{bcolorg\\}", ss.borderColor.getGreen() + "").replaceAll("\\{bcolorb\\}", ss.borderColor.getBlue() + "");
 			format = format.replaceAll("\\{rot\\}", ss.rotation + "").replaceAll("\\{bwidth\\}", ss.borderWidth + "");
-			format = format.replaceAll("\\{type\\}", ss.type.toString()).replaceAll("\\{#\\}", "shape" + id);
+			format = format.replaceAll("\\{type\\}", shape.getName()).replaceAll("\\{#\\}", "shape" + id);
 			System.out.println(format);
 			return id + 1;
 		}

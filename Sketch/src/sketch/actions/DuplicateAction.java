@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sketch.panels.DrawPanel;
-import sketch.shapes.ShapeState;
 import sketch.shapes.SketchShape;
 import sketch.shapes.Vec2f;
 import sketch.shapes.Vec2i;
@@ -21,10 +20,10 @@ public class DuplicateAction extends DPModifyingAction {
 	public void start(Vec2i mousePos){
 		super.start(mousePos);
 		duplicates = new ArrayList<SketchShape>();
-		for (ShapeState ss : originalStates){
-			
-			ShapeState ss2 = new ShapeState(ss.type, ss.location.plus(OFFSET), ss.size, ss.rotation, ss.color, ss.borderColor, ss.borderWidth);
-			duplicates.add(ss2.generateShape());
+		for (int i = 0; i < shapesAffected.size(); i++){
+			SketchShape _temp = shapesAffected.get(i).copy();
+			_temp.setLocation(originalStates.get(i).location.plus(OFFSET));
+			duplicates.add(_temp);
 		}
 	}
 	

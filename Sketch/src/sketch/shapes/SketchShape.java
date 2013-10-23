@@ -35,6 +35,16 @@ public abstract class SketchShape{
 		color = Color.red;
 		borderColor = Color.red;
 	}
+	
+	public SketchShape(ShapeState s){
+		size = s.size;
+		selected = false;
+		location = s.location;
+		rotation = s.rotation;
+		borderWidth = s.borderWidth;
+		color = s.color;
+		borderColor = s.borderColor;
+	}
 
 	private int invAndClampColor(int val){
 		return Math.min(200,  255 - val);
@@ -82,7 +92,7 @@ public abstract class SketchShape{
 	
 	protected abstract void drawSelf(Graphics2D g);
 	protected abstract Shape getShape();
-	public abstract ShapeState getState();
+	public abstract SketchShape copy();
 	
 	public void setLocation(Vec2f loc){
 		location = loc;
@@ -185,6 +195,15 @@ public abstract class SketchShape{
 	public void setBorderWidth(int w){
 		borderWidth = w;
 	}
+
+	public ShapeState getState(){
+		return new ShapeState(location, size, rotation, color, borderColor, borderWidth);
+	}
 	
-	public abstract String toString();
+	@Override
+	public String toString() {
+		return getName() + "/" + getState().toString();
+	}
+
+	public abstract String getName();
 }

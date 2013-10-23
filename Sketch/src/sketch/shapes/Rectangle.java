@@ -6,6 +6,14 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 public class Rectangle extends SketchShape{
+	
+	public Rectangle(){
+		super();
+	}
+	
+	public Rectangle(ShapeState state) {
+		super(state);
+	}
 
 	@Override
 	protected Shape getShape(){
@@ -24,12 +32,12 @@ public class Rectangle extends SketchShape{
 	}
 
 	@Override
-	public ShapeState getState(){
-		return new ShapeState(ShapeType.RECTANGLE, location, size, rotation, color, borderColor, borderWidth);
+	public String getName(){
+		return "Rectangle";
 	}
-
+	
 	@Override
-	public String toString() {
-		return getState().toString();
+	public SketchShape copy() {
+		return new Rectangle(getState());
 	}
 }
